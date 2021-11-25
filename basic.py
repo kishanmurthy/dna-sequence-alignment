@@ -1,5 +1,8 @@
 import tracemalloc
 import time
+import argparse
+
+
 
 def read_and_generate_strings(input_file):
     X=''
@@ -7,10 +10,8 @@ def read_and_generate_strings(input_file):
     with open(f'{input_file}') as file:
         lines = file.readlines()
         X = lines[0].strip()
-        X_len = len(X)
-        #print('X:',X_len)
         Y = ''
-        flag,j,k = 0,0,0
+        flag = 0
 
         for i in range(1,len(lines)):
             val = lines[i].strip()
@@ -18,21 +19,21 @@ def read_and_generate_strings(input_file):
                 val = int(val)
 
                 if flag == 0:
-                    j += 1
                     X = X[:val+1] + X + X[val+1:]
                 else:
-                    k += 1
                     Y = Y[:val+1] + Y + Y[val+1:]
             except:
                 Y = val
-                Y_len = len(Y)
-                #print('Y:',len(Y))
                 flag = 1
-        
-        #print(X,len(X),j,X_len,(2**j)*X_len)
-        #print(Y,len(Y),k,Y_len,(2**k)*Y_len)
-
     return X,Y
+
+def write_output(X_align, Y_align, start_time, current_memory, peak_memory):
+    output_file = open("output.txt", "w")        
+    output_file.write('First 50 Elements X: ' + str(X_align[:50])  + ' Y: ' + str(Y_align[:50] )+'\n')
+    output_file.write('Last  50 Elements X: ' + str(X_align[-50:]) + ' Y: ' + str(Y_align[-50:])+'\n')
+    output_file.write(f"Time Taken: {time.time()-start_time}"+'\n')
+    output_file.write(f"Current memory usage is {current_memory / 10**3} KB; Peak was {peak_memory / 10**3} KB"+'\n')
+    output_file.close()
 
 
 class SequenceAlignmentBasic():
@@ -49,10 +50,10 @@ class SequenceAlignmentBasic():
     def calculate_alignment_cost(self):       
 
         for i in range(self.len_x+1):
-            self.dp[i][0] = i*delta   
+            self.dp[i][0] = i*self.delta   
 
         for i in range(self.len_y+1):
-            self.dp[0][i] = i*delta
+            self.dp[0][i] = i*self.delta
 
         for i in range(1,self.len_x+1):
             for j in range(1,self.len_y+1):
@@ -63,9 +64,7 @@ class SequenceAlignmentBasic():
 
                 self.dp[i][j] = min(matching,mismatch_x,mismatch_y)
 
-        return self.dp[self.len_x-1][self.len_y-1]
-
-
+        return self.dp[self.len_x][self.len_y]
 
     def find_alignment(self):
         X_aligned = ""
@@ -105,33 +104,34 @@ class SequenceAlignmentBasic():
         
         return X_aligned, Y_aligned
 
-tracemalloc.start()
-start = time.time()
-
-alpha =  {'A': {'A':0,'C':110,'G':48,'T':94},
+def run_sequence_alignment(input_file):
+    alpha =  {'A': {'A':0,'C':110,'G':48,'T':94},
           'C': {'A':110,'C':0,'G':118,'T':48},
           'G':  {'A':48,'C':118,'G':0,'T':110},
           'T': {'A':94,'C':48,'G':110,'T':0}
           }
 
+    delta = 30
+    X,Y = read_and_generate_strings(input_file)
+    sequence_alignment = SequenceAlignmentBasic(X,Y,alpha,delta)
+    cost = sequence_alignment.calculate_alignment_cost()
+    return sequence_alignment.find_alignment()
 
-delta = 30
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input")
+    args = parser.parse_args()
+    
+    tracemalloc.start()
+    start_time = time.time()
 
-X,Y =read_and_generate_strings("basecase/input1.txt")
-sequence_alignment = SequenceAlignmentBasic(X,Y,alpha,delta)
-cost = sequence_alignment.calculate_alignment_cost()
-X_align, Y_align = sequence_alignment.find_alignment()
+    X_align, Y_align = run_sequence_alignment(args.input)
 
-output_file = open("output_basic.txt", "w")
-        
-
-output_file.write('First 50 Elements X: ' + str(X_align[:50])  + ' Y: ' + str(Y_align[:50] )+'\n')
-output_file.write('Last  50 Elements X: ' + str(X_align[-50:]) + ' Y: ' + str(Y_align[-50:])+'\n')
+    current_memory, peak_memory = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    write_output(X_align,Y_align,start_time,current_memory,peak_memory)
+    
 
 
-current, peak = tracemalloc.get_traced_memory()
-output_file.write(f"Time Taken: {time.time()-start}"+'\n')
-output_file.write(f"Current memory usage is {current / 10**3} KB; Peak was {peak / 10**3} KB"+'\n')
-
-output_file.close()
-tracemalloc.stop()
+if __name__ == "__main__":
+    main()
