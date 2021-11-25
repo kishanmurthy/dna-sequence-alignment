@@ -1,12 +1,16 @@
+import tracemalloc
+import time
+
 def read_and_generate_strings(input_file):
     X=''
     Y=''
     with open(f'{input_file}') as file:
         lines = file.readlines()
         X = lines[0].strip()
-
+        X_len = len(X)
+        #print('X:',X_len)
         Y = ''
-        flag = 0
+        flag,j,k = 0,0,0
 
         for i in range(1,len(lines)):
             val = lines[i].strip()
@@ -14,12 +18,20 @@ def read_and_generate_strings(input_file):
                 val = int(val)
 
                 if flag == 0:
+                    j += 1
                     X = X[:val+1] + X + X[val+1:]
                 else:
+                    k += 1
                     Y = Y[:val+1] + Y + Y[val+1:]
             except:
                 Y = val
+                Y_len = len(Y)
+                #print('Y:',len(Y))
                 flag = 1
+        
+        #print(X,len(X),j,X_len,(2**j)*X_len)
+        #print(Y,len(Y),k,Y_len,(2**k)*Y_len)
+
     return X,Y
 
 
@@ -93,6 +105,8 @@ class SequenceAlignmentBasic():
         
         return X_aligned, Y_aligned
 
+tracemalloc.start()
+start = time.time()
 
 alpha =  {'A': {'A':0,'C':110,'G':48,'T':94},
           'C': {'A':110,'C':0,'G':118,'T':48},
@@ -103,10 +117,21 @@ alpha =  {'A': {'A':0,'C':110,'G':48,'T':94},
 
 delta = 30
 
-X,Y =read_and_generate_strings("input1.txt")
+X,Y =read_and_generate_strings("basecase/input1.txt")
 sequence_alignment = SequenceAlignmentBasic(X,Y,alpha,delta)
 cost = sequence_alignment.calculate_alignment_cost()
 X_align, Y_align = sequence_alignment.find_alignment()
 
-print(X_align)
-print(Y_align)
+output_file = open("output_basic.txt", "w")
+        
+
+output_file.write('First 50 Elements X: ' + str(X_align[:50])  + ' Y: ' + str(Y_align[:50] )+'\n')
+output_file.write('Last  50 Elements X: ' + str(X_align[-50:]) + ' Y: ' + str(Y_align[-50:])+'\n')
+
+
+current, peak = tracemalloc.get_traced_memory()
+output_file.write(f"Time Taken: {time.time()-start}"+'\n')
+output_file.write(f"Current memory usage is {current / 10**3} KB; Peak was {peak / 10**3} KB"+'\n')
+
+output_file.close()
+tracemalloc.stop()

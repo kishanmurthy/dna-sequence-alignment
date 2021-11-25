@@ -1,3 +1,6 @@
+import tracemalloc
+import time
+
 def read_and_generate_strings(input_file):
     X=''
     Y=''
@@ -150,6 +153,8 @@ class SequenceAlignmentEfficient():
         else:
             return self.divide_and_conquer(X,Y)
 
+tracemalloc.start()
+start = time.time()
 
 alpha =  {'A': {'A':0,'C':110,'G':48,'T':94},
           'C': {'A':110,'C':0,'G':118,'T':48},
@@ -159,12 +164,23 @@ alpha =  {'A': {'A':0,'C':110,'G':48,'T':94},
 
 delta = 30
 
-X,Y = read_and_generate_strings("input1.txt")
+X,Y = read_and_generate_strings("basecase/input1.txt")
 
 sequence_alignment = SequenceAlignmentEfficient(X,Y,alpha,delta)
 cost = sequence_alignment.calculate_alignment_cost()
 X_align, Y_align = sequence_alignment.find_alignment()
 
 
-print(X_align)
-print(Y_align)
+output_file = open("output_efficient.txt", "w")
+        
+
+output_file.write('First 50 Elements X: ' + str(X_align[:50])  + ' Y: ' + str(Y_align[:50] )+'\n')
+output_file.write('Last  50 Elements X: ' + str(X_align[-50:]) + ' Y: ' + str(Y_align[-50:])+'\n')
+
+
+current, peak = tracemalloc.get_traced_memory()
+output_file.write(f"Time Taken: {time.time()-start}"+'\n')
+output_file.write(f"Current memory usage is {current / 10**3} KB; Peak was {peak / 10**3} KB"+'\n')
+
+output_file.close()
+tracemalloc.stop()
