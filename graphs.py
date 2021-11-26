@@ -83,8 +83,8 @@ def generate_graphs():
     time_comp_df = pd.DataFrame(time_comp, columns=['time_basic','time_efficient'])
     memory_comp_df = pd.DataFrame(memory_comp, columns=['peak_memory_basic','peak_memory_efficient'])
     
-    plt.plot(memory_comp_df["peak_memory_basic"], label = 'memory_basic')
-    plt.plot(memory_comp_df["peak_memory_efficient"], label = 'memory_efficient')
+    plt.plot(memory_comp_df["peak_memory_basic"], label = 'basic')
+    plt.plot(memory_comp_df["peak_memory_efficient"], label = 'efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Problem Size')
     plt.ylabel('Memory Usage (KB)')
@@ -92,8 +92,8 @@ def generate_graphs():
 
     plt.show()
 
-    plt.plot(time_comp_df["time_basic"], label = 'time_basic')
-    plt.plot(time_comp_df["time_efficient"], label = 'time_efficient')
+    plt.plot(time_comp_df["time_basic"], label = 'basic')
+    plt.plot(time_comp_df["time_efficient"], label = 'efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Problem Size')
     plt.ylabel('CPU Time (milliseconds)')
