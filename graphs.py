@@ -48,7 +48,7 @@ def stats_basic(X,Y):
         current_memory_list.append(current_memory / 10**3)
         peak_memory_list.append(peak_memory / 10**3)
     
-    return np.mean(time_list), np.mean(current_memory_list),np.mean(peak_memory_list)
+    return np.median(time_list), np.median(current_memory_list),np.median(peak_memory_list)
         
 def stats_efficient(X,Y):
     time_list = []
@@ -65,25 +65,26 @@ def stats_efficient(X,Y):
         current_memory_list.append(current_memory / 10**3)
         peak_memory_list.append(peak_memory / 10**3)
     
-    return np.mean(time_list), np.mean(current_memory_list),np.mean(peak_memory_list)
+    return np.median(time_list), np.median(current_memory_list),np.median(peak_memory_list)
 
 def generate_graphs():
 
     time_comp = []
     memory_comp = []
+    x_val = []
     
     for i in range(1,ITERATIONS+1):
-        X,Y = generate_X_and_Y(ITERATIONS)
+        X,Y = generate_X_and_Y(i)
         time_basic, curr_memory_basic , peak_memory_basic = stats_basic(X,Y)
         time_efficient, curr_memory_efficient , peak_memory_efficient = stats_efficient(X,Y)
         time_comp.append([time_basic,time_efficient])
-        memory_comp.append([curr_memory_basic,curr_memory_efficient])
+        memory_comp.append([peak_memory_basic,peak_memory_efficient])
 
     time_comp_df = pd.DataFrame(time_comp, columns=['time_basic','time_efficient'])
-    memory_comp_df = pd.DataFrame(memory_comp, columns=['curr_memory_basic','curr_memory_efficient'])
+    memory_comp_df = pd.DataFrame(memory_comp, columns=['peak_memory_basic','peak_memory_efficient'])
     
-    plt.plot(memory_comp_df["curr_memory_basic"], label = 'curr_memory_basic')
-    plt.plot(memory_comp_df["curr_memory_efficient"], label = 'curr_memory_efficient')
+    plt.plot(memory_comp_df["peak_memory_basic"], label = 'peak_memory_basic')
+    plt.plot(memory_comp_df["peak_memory_efficient"], label = 'peak_memory_efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Probelm Size')
     plt.ylabel('Memory Consuption(KB)')
