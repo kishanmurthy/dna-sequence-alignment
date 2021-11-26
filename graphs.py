@@ -87,7 +87,7 @@ def generate_graphs():
     plt.plot(memory_comp_df["peak_memory_efficient"], label = 'peak_memory_efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Probelm Size')
-    plt.ylabel('Memory Consuption(KB)')
+    plt.ylabel('Memory (KB)')
     plt.savefig('MemoryPlot.png',dpi=300)
 
     plt.show()
