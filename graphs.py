@@ -84,14 +84,19 @@ def generate_graphs():
     
     plt.plot(memory_comp_df["curr_memory_basic"], label = 'curr_memory_basic')
     plt.plot(memory_comp_df["curr_memory_efficient"], label = 'curr_memory_efficient')
+    plt.legend(loc="upper right")
     plt.xlabel('Probelm Size')
     plt.ylabel('Memory Consuption(KB)')
+    plt.savefig('MemoryPlot.png',dpi=300)
+
     plt.show()
 
     plt.plot(time_comp_df["time_basic"], label = 'time_basic')
     plt.plot(time_comp_df["time_efficient"], label = 'time_efficient')
+    plt.legend(loc="upper right")
     plt.xlabel('Probelm Size')
     plt.ylabel('Time(seconds)')
+    plt.savefig('CPUPlot.png',dpi=300)
     plt.show()
     
 
