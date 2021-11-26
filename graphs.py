@@ -87,7 +87,7 @@ def generate_graphs():
     plt.plot(memory_comp_df["peak_memory_efficient"], label = 'peak_memory_efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Problem Size')
-    plt.ylabel('Memory (KB)')
+    plt.ylabel('Memory Usage (KB)')
     plt.savefig('MemoryPlot.png',dpi=300)
 
     plt.show()
@@ -96,7 +96,7 @@ def generate_graphs():
     plt.plot(time_comp_df["time_efficient"], label = 'time_efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Problem Size')
-    plt.ylabel('Time (seconds)')
+    plt.ylabel('CPU Time (seconds)')
     plt.savefig('CPUPlot.png',dpi=300)
     plt.show()
     
