@@ -29,10 +29,10 @@ def read_and_generate_strings(input_file):
 
 def write_output(X_align, Y_align, start_time, current_memory, peak_memory):
     output_file = open("output.txt", "w")        
-    output_file.write('First 50 Elements X: ' + str(X_align[:50])  + ' Y: ' + str(Y_align[:50] )+'\n')
-    output_file.write('Last  50 Elements X: ' + str(X_align[-50:]) + ' Y: ' + str(Y_align[-50:])+'\n')
-    output_file.write(f"Time Taken: {time.time()-start_time}"+'\n')
-    output_file.write(f"Current memory usage is {current_memory / 10**3} KB; Peak was {peak_memory / 10**3} KB"+'\n')
+    output_file.write(str(X_align[:50])  + ' ' + str(Y_align[:50] )+'\n')
+    output_file.write(str(X_align[-50:]) + ' ' + str(Y_align[-50:])+'\n')
+    output_file.write(f"{time.time()-start_time}"+'\n')
+    output_file.write(f"{peak_memory}"+'\n')
     output_file.close()
 
 
