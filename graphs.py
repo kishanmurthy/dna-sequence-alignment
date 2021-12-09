@@ -48,7 +48,7 @@ def stats_basic(X,Y):
         current_memory_list.append(current_memory / 10**3)
         peak_memory_list.append(peak_memory / 10**3)
     
-    return np.median(time_list)*10**3, np.median(current_memory_list),np.median(peak_memory_list)
+    return np.median(time_list), np.median(current_memory_list),np.median(peak_memory_list)
         
 def stats_efficient(X,Y):
     time_list = []
@@ -65,7 +65,7 @@ def stats_efficient(X,Y):
         current_memory_list.append(current_memory / 10**3)
         peak_memory_list.append(peak_memory / 10**3)
     
-    return np.median(time_list)*10**3, np.median(current_memory_list),np.median(peak_memory_list)
+    return np.median(time_list), np.median(current_memory_list),np.median(peak_memory_list)
 
 def generate_graphs():
 
@@ -77,11 +77,13 @@ def generate_graphs():
         X,Y = generate_X_and_Y(i)
         time_basic, curr_memory_basic , peak_memory_basic = stats_basic(X,Y)
         time_efficient, curr_memory_efficient , peak_memory_efficient = stats_efficient(X,Y)
-        time_comp.append([time_basic,time_efficient])
-        memory_comp.append([peak_memory_basic,peak_memory_efficient])
+        time_comp.append([2*i,time_basic,time_efficient])
+        memory_comp.append([2*i, peak_memory_basic,peak_memory_efficient])
+    
+    
+    time_comp_df = pd.DataFrame(time_comp, columns=['problem_size','time_basic','time_efficient']).set_index('problem_size')
 
-    time_comp_df = pd.DataFrame(time_comp, columns=['time_basic','time_efficient'])
-    memory_comp_df = pd.DataFrame(memory_comp, columns=['peak_memory_basic','peak_memory_efficient'])
+    memory_comp_df = pd.DataFrame(memory_comp, columns=['problem_size','peak_memory_basic','peak_memory_efficient']).set_index('problem_size')
     
     plt.plot(memory_comp_df["peak_memory_basic"], label = 'basic')
     plt.plot(memory_comp_df["peak_memory_efficient"], label = 'efficient')
@@ -91,17 +93,19 @@ def generate_graphs():
     plt.savefig('MemoryPlot.png',dpi=300)
 
     plt.show()
+    plt.clf()
 
     plt.plot(time_comp_df["time_basic"], label = 'basic')
     plt.plot(time_comp_df["time_efficient"], label = 'efficient')
     plt.legend(loc="upper right")
     plt.xlabel('Problem Size')
-    plt.ylabel('CPU Time (milliseconds)')
+    plt.ylabel('CPU Time (seconds)')
     plt.savefig('CPUPlot.png',dpi=300)
     plt.show()
     
-
     return time_comp_df, memory_comp_df
     
 time_comp_df, memory_comp_df = generate_graphs()
 
+time_comp_df.to_csv("time.csv")
+memory_comp_df.to_csv("memory.csv")

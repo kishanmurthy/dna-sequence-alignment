@@ -25,12 +25,13 @@ def read_and_generate_strings(input_file):
                 flag = 1
     return X,Y
 
-def write_output(X_align, Y_align, start_time, current_memory, peak_memory):
+def write_output(X_align, Y_align, start_time, current_memory, peak_memory, cost):
     output_file = open("output.txt", "w")        
     output_file.write(str(X_align[:50])  + ' ' + str(Y_align[:50] )+'\n')
     output_file.write(str(X_align[-50:]) + ' ' + str(Y_align[-50:])+'\n')
+    output_file.write(f'{str(float(cost))}\n')
     output_file.write(f"{time.time()-start_time}"+'\n')
-    output_file.write(f"{peak_memory}"+'\n')
+    output_file.write(f"{peak_memory/1e3}"+'\n')
     output_file.close()
 
 
@@ -185,8 +186,8 @@ def run_sequence_alignment(input_file):
     delta = 30
     X,Y = read_and_generate_strings(input_file)
     sequence_alignment = SequenceAlignmentEfficient(X,Y,alpha,delta)
-    #cost = sequence_alignment.calculate_alignment_cost()
-    return sequence_alignment.find_alignment()
+    cost = sequence_alignment.calculate_alignment_cost()
+    return sequence_alignment.find_alignment(), cost[-1]
 
 
 def main():
@@ -197,11 +198,11 @@ def main():
     tracemalloc.start()
     start_time = time.time()
     
-    X_align, Y_align = run_sequence_alignment(args.input)
-
+    alignment, cost = run_sequence_alignment(args.input)
+    X_align, Y_align = alignment
     current_memory, peak_memory = tracemalloc.get_traced_memory()
     tracemalloc.stop()
-    write_output(X_align,Y_align,start_time,current_memory,peak_memory)
+    write_output(X_align,Y_align,start_time,current_memory,peak_memory, cost)
 
 if __name__ == "__main__":
     main()
