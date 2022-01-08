@@ -1,12 +1,11 @@
 from basic import SequenceAlignmentBasic
 from efficient import SequenceAlignmentEfficient
-from utils import compute_cost_bio_stat, compute_cost, generate_random_sequence
+from utils import  generate_random_sequence
 
 import tracemalloc
 import time
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 ITERATIONS = 100
 SAMPLING_ITERATIONS = 10
@@ -68,44 +67,35 @@ def stats_efficient(X,Y):
     return np.median(time_list), np.median(current_memory_list),np.median(peak_memory_list)
 
 def generate_graphs():
-
+    basic_data = []
+    efficient_data = []
     time_comp = []
     memory_comp = []
-    x_val = []
     
     for i in range(1,ITERATIONS+1):
-        X,Y = generate_X_and_Y(i)
+        X,Y = generate_X_and_Y(ITERATIONS)
         time_basic, curr_memory_basic , peak_memory_basic = stats_basic(X,Y)
         time_efficient, curr_memory_efficient , peak_memory_efficient = stats_efficient(X,Y)
-        time_comp.append([2*i,time_basic,time_efficient])
-        memory_comp.append([2*i, peak_memory_basic,peak_memory_efficient])
+        basic_data.append([time_basic, curr_memory_basic , peak_memory_basic])
+        efficient_data.append([time_efficient, curr_memory_efficient , peak_memory_efficient])
+        time_comp.append([time_basic,time_efficient])
+        memory_comp.append([curr_memory_basic,curr_memory_efficient])
     
+    basic_df = pd.DataFrame(basic_data, columns=['time_basic', 'curr_memory_basic' , 'peak_memory_basic'])
+    efficient_df = pd.DataFrame(efficient_data, columns=['time_efficient', 'curr_memory_efficient' , 'peak_memory_efficient'])
+    print(basic_df.plot.area(subplots=True))
+    print(efficient_df.plot.area(subplots=True))
+    time_comp_df = pd.DataFrame(time_comp, columns=['time_basic','time_efficient'])
+    memory_comp_df = pd.DataFrame(memory_comp, columns=['curr_memory_basic','curr_memory_efficient'])
+    print(time_comp_df.plot())
+    print(memory_comp_df.plot())
     
-    time_comp_df = pd.DataFrame(time_comp, columns=['problem_size','time_basic','time_efficient']).set_index('problem_size')
 
-    memory_comp_df = pd.DataFrame(memory_comp, columns=['problem_size','peak_memory_basic','peak_memory_efficient']).set_index('problem_size')
-    
-    plt.plot(memory_comp_df["peak_memory_basic"], label = 'basic')
-    plt.plot(memory_comp_df["peak_memory_efficient"], label = 'efficient')
-    plt.legend(loc="upper right")
-    plt.xlabel('Problem Size')
-    plt.ylabel('Memory Usage (KB)')
-    plt.savefig('MemoryPlot.png',dpi=300)
+    return basic_df, efficient_df
 
-    plt.show()
-    plt.clf()
+def main():
+    basic_df, efficient_df = generate_graphs()
 
-    plt.plot(time_comp_df["time_basic"], label = 'basic')
-    plt.plot(time_comp_df["time_efficient"], label = 'efficient')
-    plt.legend(loc="upper right")
-    plt.xlabel('Problem Size')
-    plt.ylabel('CPU Time (seconds)')
-    plt.savefig('CPUPlot.png',dpi=300)
-    plt.show()
-    
-    return time_comp_df, memory_comp_df
-    
-time_comp_df, memory_comp_df = generate_graphs()
 
-time_comp_df.to_csv("time.csv")
-memory_comp_df.to_csv("memory.csv")
+if __name__ == "__main__":
+    main()
